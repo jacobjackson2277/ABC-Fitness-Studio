@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Desktop Homepage</title>
+<link href="styles.css" rel="stylesheet"/>
+</head>
+<body class="desktop-layout">
+<header class="site-header">
+<div class="logo">ABC Fitness Studio</div>
+<nav class="site-nav">
+<a href="desktop-home.html">Home</a>
+<a href="desktop-gallery.html">Gallery</a>
+<a href="desktop-about.html">About Us</a>
+<a href="desktop-contact.html">Contact</a>
+</nav>
+</header>
+<main>
+<section class="hero section-box">
+<h1>Transition: Transform: Transcend</h1>
+<a class="button" href="desktop-gallery.html">View Gallery</a>
+</section>
+<section class="section-box two-column">
+<div>
+<h2>Our Mission</h2>
+<p>ABC Fitness Studio is built to help everyday people feel stronger, healthier, and more confident. We want our studio to be a place where anyone can show up, work hard, and feel supported. Our goal is to make fitness simple, welcoming, and something people can stick with.</p>
+</div>
+<aside>
+<h2>Our Big 3</h2>
+<p>Show up for yourself, even when motivation is low.</p>
+<p>Build strength that carries into real life.</p>
+<p>Move with purpose and leave better than you came in.</p>
+</aside>
+</section>
+<section class="section-box">
+<h2>Our Favorites</h2>
+<div class="card-row">
+<article class="card"><img alt="Group Yoga" class="gallery-image" src="images/group-yoga-session.jpg"/><h3>Group Yoga</h3><p>A relaxing group class focused on flexibility, balance, and steady movement.</p></article><article class="card"><img alt="Kickboxing" class="gallery-image" src="images/group-kickboxing-session.jpg"/><h3>Kickboxing</h3><p>A high energy class that builds cardio, strength, and confidence.</p></article><article class="card"><img alt="Pilates" class="gallery-image" src="images/group-pilates-session.jpg"/><h3>Pilates</h3><p>A core focused class that helps improve control, posture, and total body strength.</p></article>
+</div>
+</section>
+</main>
+<footer class="site-footer"><p>ABC Fitness Studio</p><button onclick="subscribeAlert()">Subscribe</button></footer>
+<script>
+
+function showSiteMessage(message) {
+  const existing = document.querySelector('.custom-message-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'custom-message-overlay';
+
+  const box = document.createElement('div');
+  box.className = 'custom-message-box';
+
+  const text = document.createElement('p');
+  text.textContent = message;
+
+  const closeButton = document.createElement('button');
+  closeButton.textContent = 'OK';
+  closeButton.addEventListener('click', function () {
+    overlay.remove();
+  });
+
+  box.appendChild(text);
+  box.appendChild(closeButton);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
+function subscribeAlert() {
+  showSiteMessage('Thank you for subscribing.');
+}
+
+function getCartItems() {
+  return JSON.parse(sessionStorage.getItem('abcFitnessCart')) || [];
+}
+
+function saveCartItems(cartItems) {
+  sessionStorage.setItem('abcFitnessCart', JSON.stringify(cartItems));
+}
+
+function addToCart(itemName) {
+  const cartItems = getCartItems();
+  const existingItem = cartItems.find(function (item) {
+    return item.name === itemName;
+  });
+
+  if (existingItem) {
+    existingItem.quantity += 1;
+  } else {
+    cartItems.push({ name: itemName, quantity: 1 });
+  }
+
+  saveCartItems(cartItems);
+  showSiteMessage(itemName + ' added to the cart.');
+}
+
+function addCartAlert(itemName) {
+  addToCart(itemName || 'Item');
+}
+
+function viewCart() {
+  const cartItems = getCartItems();
+  const existing = document.querySelector('.cart-modal-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'cart-modal-overlay';
+
+  const box = document.createElement('div');
+  box.className = 'cart-modal-box';
+
+  const heading = document.createElement('h2');
+  heading.textContent = 'Shopping Cart';
+  box.appendChild(heading);
+
+  if (cartItems.length === 0) {
+    const emptyMessage = document.createElement('p');
+    emptyMessage.textContent = 'Your cart is empty.';
+    box.appendChild(emptyMessage);
+  } else {
+    const list = document.createElement('ul');
+    list.className = 'cart-list';
+
+    cartItems.forEach(function (item) {
+      const listItem = document.createElement('li');
+      listItem.textContent = item.name + ' - Quantity: ' + item.quantity;
+      list.appendChild(listItem);
+    });
+
+    box.appendChild(list);
+  }
+
+  const closeButton = document.createElement('button');
+  closeButton.textContent = 'Close';
+  closeButton.addEventListener('click', function () {
+    overlay.remove();
+  });
+
+  box.appendChild(closeButton);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
+function clearCartAlert() {
+  sessionStorage.removeItem('abcFitnessCart');
+  showSiteMessage('Cart cleared.');
+}
+
+function processOrderAlert() {
+  sessionStorage.removeItem('abcFitnessCart');
+  showSiteMessage('Thank you for your order.');
+}
+
+function clearContactErrors() {
+  document.querySelectorAll('.error-message').forEach(function (error) {
+    error.textContent = '';
+  });
+}
+
+function setError(id, message) {
+  const errorElement = document.getElementById(id);
+  if (errorElement) {
+    errorElement.textContent = message;
+  }
+}
+
+function messageAlert(event) {
+  if (event) event.preventDefault();
+
+  clearContactErrors();
+
+  const nameInput = document.getElementById('contactName');
+  const emailInput = document.getElementById('contactEmail');
+  const messageInput = document.getElementById('contactMessage');
+
+  if (!nameInput || !emailInput || !messageInput) {
+    showSiteMessage('Thank you for your message.');
+    return;
+  }
+
+  const name = nameInput.value.trim();
+  const email = emailInput.value.trim();
+  const message = messageInput.value.trim();
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  let isValid = true;
+
+  if (name === '') {
+    setError('nameError', 'Please enter your name.');
+    isValid = false;
+  }
+
+  if (email === '') {
+    setError('emailError', 'Please enter your email address.');
+    isValid = false;
+  } else if (!emailPattern.test(email)) {
+    setError('emailError', 'Please enter a valid email address.');
+    isValid = false;
+  }
+
+  if (message === '') {
+    setError('messageError', 'Please enter a message.');
+    isValid = false;
+  }
+
+  if (!isValid) {
+    return;
+  }
+
+  const contactSubmissions = JSON.parse(localStorage.getItem('abcFitnessContactSubmissions')) || [];
+  contactSubmissions.push({
+    name: name,
+    email: email,
+    message: message,
+    submittedAt: new Date().toLocaleString()
+  });
+  localStorage.setItem('abcFitnessContactSubmissions', JSON.stringify(contactSubmissions));
+
+  showSiteMessage('Thank you for your message.');
+  nameInput.value = '';
+  emailInput.value = '';
+  messageInput.value = '';
+}
+
+</script></body>
+</html>
